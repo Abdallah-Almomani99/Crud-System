@@ -1,0 +1,263 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LocalStorage Example</title>
+    <style>
+      body {
+        background-color: black;
+        color: white;
+      }
+      #addData {
+        background-color: green;
+        color: white;
+        padding: 10px;
+        border-radius: 10%;
+        margin-left: 20px;
+      }
+      #dataInput {
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>CRUD Application With Local Storage</h1>
+
+    <label for="dataInput">Name:</label>
+    <input type="text" id="dataInput" placeholder="Enter Name" />
+    <label for="dataInput">Age:</label>
+    <input type="text" id="dataInput" placeholder="Enter Age" />
+    <label for="dataInput">Address:</label>
+    <input type="text" id="dataInput" placeholder="Enter Address" />
+    <label for="dataInput">Email:</label>
+    <input type="text" id="dataInput" placeholder="Enter Email" />
+    <button id="addData" onclick="saveToLocalStorage()">Add Data</button>
+    <br />
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Address</th>
+        <th>Email</th>
+      </tr>
+    </table>
+    <button onclick="loadFromLocalStorage()">Load from LocalStorage</button>
+    <button onclick="removeFromLocalStorage()">Remove from LocalStorage</button>
+
+    <p id="output"></p>
+
+    <script>
+      function saveToLocalStorage() {
+        const input = document.getElementById("dataInput").value;
+        localStorage.setItem("myData", input); //save data
+        alert("Data is saved");
+      }
+
+      function loadFromLocalStorage() {
+        const storData = localStorage.getItem("myData");
+        const output = document.getElementById("output");
+
+        if (storData) {
+          output.textContent = "StorData = " + storData;
+        } else {
+          output.textContent = "No Data Found";
+        }
+      }
+    </script>
+  </body>
+</html> -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CRUD Application with Local Storage</title>
+    <style>
+            body {
+        font-family: Arial, sans-serif; /* Replace with the actual font family */
+        background-color: #111; /* Replace with the background color */
+        color: #fff; /* Replace with the text color */
+      }
+
+      h1 {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+
+      form {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+      }
+
+      label {
+        flex: 1;
+        margin-right: 10px;
+      }
+
+      input {
+        flex: 2;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+      }
+
+      button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;  
+
+        cursor: pointer;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      th, td {
+        border: 1px solid #ccc;
+        padding: 10px;
+
+      }
+
+      .delete-button, .edit-button {
+        background-color: #ff0000;
+        color: #fff;
+        padding: 5px 10px;
+        border: none;
+        cursor: pointer;
+      }
+
+      .edit-button {
+        background-color: #ffcc00;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>CRUD Application with Local Storage</h1>
+    <form id="dataForm">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" />
+      <label for="age">Age:</label>
+      <input type="number" id="age" name="age" />
+      <label for="address">Address:</label>  
+
+      <input type="text" id="address" name="address" />
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" />
+      <button type="submit">Add Data</button>
+    </form>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Address</th>
+          <th>Email</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="dataList"></tbody>
+    </table>
+    <script>
+      // Function to load data from local storage
+      function loadData() {
+        const data = localStorage.getItem("data");
+        if (data) {
+          const parsedData = JSON.parse(data);
+          parsedData.forEach((item) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+            <td>${item.name}</td>
+            <td>${item.age}</td>
+            <td>${item.address}</td>
+            <td>${item.email}</td>
+            <td>
+              <button onclick="editData(this)">Edit</button>
+              <button onclick="deleteData(this)">Delete</button>
+            </td>
+          `;
+            document.getElementById("dataList").appendChild(row);
+          });
+        }
+      }
+
+      // Function to add data to local storage
+      function addData(event) {
+        event.preventDefault();
+        const name = document.getElementById("name").value;
+        const age = document.getElementById("age").value;
+        const address = document.getElementById("address").value;
+        const email = document.getElementById("email").value;
+        if (name && age && address && email) {
+          const data = {
+            name,
+            age,
+            address,
+            email,
+          };
+
+          const existingData = localStorage.getItem("data");
+          if (existingData) {
+            const parsedData = JSON.parse(existingData);
+            parsedData.push(data);
+            localStorage.setItem("data", JSON.stringify(parsedData));
+          } else {
+            localStorage.setItem("data", JSON.stringify([data]));
+          }
+
+          // Clear form fields
+          document.getElementById("dataForm").reset();
+
+          // Reload data to display the new entry
+          loadData();
+        } else {
+          alert("Please fill in all fields.");
+        }
+      }
+
+      // Function to edit data
+      function editData(button) {
+        const row = button.parentNode.parentNode;
+        const name = row.cells[0].textContent;
+        const age = row.cells[1].textContent;
+        const address = row.cells[2].textContent;
+        const email = row.cells[3].textContent;
+
+        document.getElementById("name").value = name;
+        document.getElementById("age").value = age;
+        document.getElementById("address").value = address;
+        document.getElementById("email").value = email;
+
+        // Set a flag to indicate edit mode
+        row.dataset.editing = true;
+      }
+
+      // Function to delete data
+      function deleteData(button) {
+        const row = button.parentNode.parentNode;
+        const name = row.cells[0].textContent;
+
+        const existingData = localStorage.getItem("data");
+        if (existingData) {
+          const parsedData = JSON.parse(existingData);
+          const filteredData = parsedData.filter((item) => item.name !== name);
+          localStorage.setItem("data", JSON.stringify(filteredData));
+        }
+
+        // Remove the row from the table
+        row.remove();
+      }
+
+      // Load data on page load
+      loadData();
+
+      // Add event listener to the form submit button
+      document.getElementById("dataForm").addEventListener("submit", addData);
+    </script>
+  </body>
+</html>
